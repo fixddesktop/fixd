@@ -48,7 +48,9 @@ build-*/
 *.log
 *.bak
 *.swp
+*.swo
 .*.swp
+.*.swo
 .*.un~
 
 # Backup files
