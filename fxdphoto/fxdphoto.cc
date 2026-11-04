@@ -29,7 +29,7 @@ private:
 	void fitImage();
 
 public:
-	long onCmdHello(FXObject*, FXSelector, void*);
+	long onCmdOpen(FXObject*, FXSelector, void*);
 	long onCmdArrow(FXObject*, FXSelector, void*);
 	void layout() override;
 public:
@@ -51,7 +51,7 @@ public:
 
 // message map
 FXDEFMAP(PhotoWin) PhotoWinMap[] = {
-	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_OPEN, PhotoWin::onCmdHello),
+	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_OPEN, PhotoWin::onCmdOpen),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_LEFT,  PhotoWin::onCmdArrow),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_RIGHT, PhotoWin::onCmdArrow),
 };
@@ -90,9 +90,27 @@ void PhotoWin::create() {
 }
 
 // button handler
-long PhotoWin::onCmdHello(FXObject*, FXSelector, void*) {
-	FXString filestr = FXFileDialog::getOpenFilename(this,"File Open","","*");
+long PhotoWin::onCmdOpen(FXObject*, FXSelector, void*) {
+	FXString filestr = FXFileDialog::getOpenFilename(this,"File Open","",
+			"All Images (*.bmp,*.png,*.jpg,*.jpeg,*.gif,*.tga,*.ppm,*.pbm,*.pgm,*.tif,*.tiff,*.xpm,*.xbm)\n"
+			"Bitmap Image (*.bmp)\n"
+			"PNG Image  (*.png)\n"
+			"JPEG Image (*.jpg,*.jpeg)\n"
+			"GIF Image (*.gif)\n"
+			"TARGA Image  (*.tga)\n"
+			"PPM/PBM/PGM Image  (*.ppm,*.pbm,*.pgm)\n"
+			"TIFF Image (*.tif,*.tiff)\n"
+			"XPM Image (*.xpm)\n"
+			"XBM Bitmap (*.xbm)\n"
+			"All Files (*)");
+
 	if (filestr.empty()) return 0;
+
+	const char* img_ext[] = {
+		".bmp", ".png", ".jpg", ".jpeg", ".gif", ".tga",
+		".ppm", ".pbm", ".pgm", ".tif", ".tiff", ".xpm",
+		".xbm"
+	};
 
 	FXImage* img = loadImage(getApp(), filestr);
 
@@ -115,10 +133,14 @@ long PhotoWin::onCmdHello(FXObject*, FXSelector, void*) {
 	for (auto& f : fs::directory_iterator(fs::path(filestr.text()).parent_path())) { //get more images for arrow
 		auto ext = f.path().extension().string();
 
-		if (f.is_regular_file() &&
-				(ext == ".png" || ext == ".jpg" || ext == ".jpeg" ||
-				 ext == ".bmp" || ext == ".gif")) //This could be expanded at one point. i think.
-			files.push_back(f.path());
+		if (!f.is_regular_file()) continue;
+		
+		for (unsigned i = 0; i < sizeof(img_ext)/sizeof(*img_ext); i++) {
+			if (strcasecmp(ext.c_str(), img_ext[i]) == 0) {
+				files.push_back(f.path());
+				break;
+			}
+		}
 	}
 
 	std::sort(files.begin(), files.end());
