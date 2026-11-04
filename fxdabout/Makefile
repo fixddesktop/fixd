@@ -11,10 +11,10 @@ LDLIBS = `fox-config --libs`
 
 PREFIX=/usr/local
 
-OBJ = fixdabout.o res/foxres.o
+OBJ = fxdabout.o res/foxres.o
 
 ICONS = res/*.gif
-BIN = fixdabout
+BIN = fxdabout
 
 CXXFLAGS += `fox-config --cflags`
 
@@ -29,7 +29,7 @@ res/foxres.cc: res/foxres.h $(ICONS)
 	reswrap -e -d -p res_ -o res/foxres.cc $(ICONS)
 
 
-fixdabout.o: fixdabout.cc
+fxdabout.o: fxdabout.cc
 
 all: $(BIN)
 

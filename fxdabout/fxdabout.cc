@@ -53,7 +53,7 @@ void AboutWindow::create() {
 
 
 int main(int argc, char *argv[]) {
-	FXApp application("About", "FiXDDesktop");
+	FXApp application("About", "FXDesk");
 	application.init(argc, argv);
 
 	img_about = new FXGIFImage(&application, res_img_about);
