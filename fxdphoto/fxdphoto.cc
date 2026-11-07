@@ -31,6 +31,7 @@ private:
 public:
 	long onCmdOpen(FXObject*, FXSelector, void*);
 	long onCmdArrow(FXObject*, FXSelector, void*);
+	long onCmdRotate(FXObject*, FXSelector, void*);
 	void layout() override;
 public:
 	// message ids
@@ -38,7 +39,8 @@ public:
 		ID_OPEN = FXMainWindow::ID_LAST,
 		ID_LEFT,
 		ID_RIGHT,
-		ID_LAST
+		ID_LAST,
+		ID_ROTATE
 	};
 
 public:
@@ -54,6 +56,7 @@ FXDEFMAP(PhotoWin) PhotoWinMap[] = {
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_OPEN, PhotoWin::onCmdOpen),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_LEFT,  PhotoWin::onCmdArrow),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_RIGHT, PhotoWin::onCmdArrow),
+	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_ROTATE, PhotoWin::onCmdRotate),
 };
 
 FXIMPLEMENT(PhotoWin, FXMainWindow, PhotoWinMap, ARRAYNUMBER(PhotoWinMap))
@@ -68,7 +71,9 @@ PhotoWin::PhotoWin(FXApp *a) : FXMainWindow(a, "Photo Viewer", NULL, NULL,
 	new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
 	new FXButton(tb_main, "", ico_left, this, ID_LEFT, FRAME_RAISED|BUTTON_TOOLBAR); //left arrow
 	new FXButton(tb_main, "", ico_right, this, ID_RIGHT, FRAME_RAISED|BUTTON_TOOLBAR); //right arrow
-	//new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
+	new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
+	new FXButton(tb_main, "", ico_left, this, ID_ROTATE, FRAME_RAISED|BUTTON_TOOLBAR); //rotate
+	// TODO: Icon for rotation
 
 	frm_imgvw = new FXPacker(this, FRAME_NORMAL|LAYOUT_FILL);
 	frm_imgvw->setBackColor(getApp()->getBackColor());
@@ -134,7 +139,7 @@ long PhotoWin::onCmdOpen(FXObject*, FXSelector, void*) {
 		auto ext = f.path().extension().string();
 
 		if (!f.is_regular_file()) continue;
-		
+
 		for (unsigned i = 0; i < sizeof(img_ext)/sizeof(*img_ext); i++) {
 			if (strcasecmp(ext.c_str(), img_ext[i]) == 0) {
 				files.push_back(f.path());
@@ -170,6 +175,14 @@ long PhotoWin::onCmdArrow(FXObject*, FXSelector sel, void*) {
 	setTitle(FXPath::name(path) + " - Photo Viewer");
 
 	return 1;
+}
+
+long PhotoWin::onCmdRotate(FXObject*, FXSelector, void*) {
+    if (img_orig) {
+        img_orig->rotate(90);
+        fitImage();
+    }
+    return 1;
 }
 
 void PhotoWin::fitImage() {
