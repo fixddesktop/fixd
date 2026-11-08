@@ -26,12 +26,14 @@ private:
 	int current = 0;
 	FXImage* img_orig = NULL;
 	int lastW = 0, lastH = 0;
+	double zoom = 1.0;
 	void fitImage();
 
 public:
 	long onCmdOpen(FXObject*, FXSelector, void*);
 	long onCmdArrow(FXObject*, FXSelector, void*);
 	long onCmdRotate(FXObject*, FXSelector, void*);
+	long onCmdZoom(FXObject*, FXSelector, void*);
 	void layout() override;
 public:
 	// message ids
@@ -40,7 +42,9 @@ public:
 		ID_LEFT,
 		ID_RIGHT,
 		ID_LAST,
-		ID_ROTATE
+		ID_ROTATE,
+		ID_ZOOM_IN,
+		ID_ZOOM_OUT,
 	};
 
 public:
@@ -57,6 +61,8 @@ FXDEFMAP(PhotoWin) PhotoWinMap[] = {
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_LEFT,  PhotoWin::onCmdArrow),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_RIGHT, PhotoWin::onCmdArrow),
 	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_ROTATE, PhotoWin::onCmdRotate),
+	FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_ZOOM_IN, PhotoWin::onCmdZoom),
+    FXMAPFUNC(SEL_COMMAND, PhotoWin::ID_ZOOM_OUT, PhotoWin::onCmdZoom),
 };
 
 FXIMPLEMENT(PhotoWin, FXMainWindow, PhotoWinMap, ARRAYNUMBER(PhotoWinMap))
@@ -73,7 +79,10 @@ PhotoWin::PhotoWin(FXApp *a) : FXMainWindow(a, "Photo Viewer", NULL, NULL,
 	new FXButton(tb_main, "", ico_right, this, ID_RIGHT, FRAME_RAISED|BUTTON_TOOLBAR); //right arrow
 	new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
 	new FXButton(tb_main, "", ico_left, this, ID_ROTATE, FRAME_RAISED|BUTTON_TOOLBAR); //rotate
-	// TODO: Icon for rotation
+    new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
+    new FXButton(tb_main, "", ico_left, this, ID_ZOOM_IN, FRAME_RAISED|BUTTON_TOOLBAR); //zoom in
+    new FXButton(tb_main, "", ico_right, this, ID_ZOOM_OUT, FRAME_RAISED|BUTTON_TOOLBAR); //zoom out
+	// TODO: Icon for rotation, and zoom
 
 	frm_imgvw = new FXPacker(this, FRAME_NORMAL|LAYOUT_FILL);
 	frm_imgvw->setBackColor(getApp()->getBackColor());
@@ -185,13 +194,20 @@ long PhotoWin::onCmdRotate(FXObject*, FXSelector, void*) {
     return 1;
 }
 
+long PhotoWin::onCmdZoom(FXObject*, FXSelector sel, void*) {
+    if (!img_orig) return 1;
+    zoom *= FXSELID(sel) == ID_ZOOM_IN ? 1.25 : 0.8;
+    fitImage();
+    return 1;
+}
+
 void PhotoWin::fitImage() {
 	if (!img_orig) return;
 
 	int w = img_orig->getWidth();
 	int h = img_orig->getHeight();
 
-	double scale = std::min({1.0,
+	double scale = zoom * std::min({1.0,
 			double(std::max(1, ivw_imgvw->getWidth() - 4)) / w,
 			double(std::max(1, ivw_imgvw->getHeight() - 4)) / h});
 
@@ -199,7 +215,7 @@ void PhotoWin::fitImage() {
 	//std::copy(img_orig->getData(), img_orig->getData() + w * h, img->getData());
 	memcpy(img->getData(), img_orig->getData(), w * h*sizeof(FXColor));
 
-	if (scale < 1.0)
+	if (scale != 1.0)
 		img->scale(std::max(1, int(w * scale)),
 				std::max(1, int(h * scale)), 1);
 
