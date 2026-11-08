@@ -219,6 +219,7 @@ void PhotoWin::fitImage() {
 		img->scale(std::max(1, int(w * scale)),
 				std::max(1, int(h * scale)), 1);
 
+    img->blend(ivw_imgvw->getBackColor());
 	img->create();
 
 	FXImage* old = ivw_imgvw->getImage();
