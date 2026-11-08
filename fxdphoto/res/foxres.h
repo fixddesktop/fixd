@@ -9,3 +9,12 @@ extern const unsigned char res_ico_open[];
 /* created by reswrap from file res/ico_right.gif */
 extern const unsigned char res_ico_right[];
 
+/* created by reswrap from file res/ico_rotate.gif */
+extern const unsigned char res_ico_rotate[];
+
+/* created by reswrap from file res/ico_zoom_in.gif */
+extern const unsigned char res_ico_zoom_in[];
+
+/* created by reswrap from file res/ico_zoom_out.gif */
+extern const unsigned char res_ico_zoom_out[];
+

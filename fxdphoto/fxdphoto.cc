@@ -7,6 +7,9 @@
 FXIcon* ico_open;
 FXIcon* ico_left;
 FXIcon* ico_right;
+FXIcon* ico_rotate;
+FXIcon* ico_zoom_in;
+FXIcon* ico_zoom_out;
 
 
 FXImage* loadImage(FXApp* app, const FXString& path) {
@@ -78,11 +81,10 @@ PhotoWin::PhotoWin(FXApp *a) : FXMainWindow(a, "Photo Viewer", NULL, NULL,
 	new FXButton(tb_main, "", ico_left, this, ID_LEFT, FRAME_RAISED|BUTTON_TOOLBAR); //left arrow
 	new FXButton(tb_main, "", ico_right, this, ID_RIGHT, FRAME_RAISED|BUTTON_TOOLBAR); //right arrow
 	new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
-	new FXButton(tb_main, "", ico_left, this, ID_ROTATE, FRAME_RAISED|BUTTON_TOOLBAR); //rotate
+	new FXButton(tb_main, "", ico_rotate, this, ID_ROTATE, FRAME_RAISED|BUTTON_TOOLBAR); //rotate
     new FXSeparator(tb_main, SEPARATOR_GROOVE); //seperator
-    new FXButton(tb_main, "", ico_left, this, ID_ZOOM_IN, FRAME_RAISED|BUTTON_TOOLBAR); //zoom in
-    new FXButton(tb_main, "", ico_right, this, ID_ZOOM_OUT, FRAME_RAISED|BUTTON_TOOLBAR); //zoom out
-	// TODO: Icon for rotation, and zoom
+    new FXButton(tb_main, "", ico_zoom_in, this, ID_ZOOM_IN, FRAME_RAISED|BUTTON_TOOLBAR); //zoom in
+    new FXButton(tb_main, "", ico_zoom_out, this, ID_ZOOM_OUT, FRAME_RAISED|BUTTON_TOOLBAR); //zoom out
 
 	frm_imgvw = new FXPacker(this, FRAME_NORMAL|LAYOUT_FILL);
 	frm_imgvw->setBackColor(getApp()->getBackColor());
@@ -247,6 +249,9 @@ int main(int argc, char *argv[]) {
 	ico_open = new FXGIFIcon(&application, res_ico_open);
 	ico_left = new FXGIFIcon(&application, res_ico_left);
 	ico_right = new FXGIFIcon(&application, res_ico_right);
+	ico_rotate = new FXGIFIcon(&application, res_ico_rotate);
+	ico_zoom_in = new FXGIFIcon(&application, res_ico_zoom_in);
+	ico_zoom_out = new FXGIFIcon(&application, res_ico_zoom_out);
 
 	new PhotoWin(&application);
 
